@@ -1,5 +1,16 @@
 # UCM Tar file and CDR pre processing script, decompress file size
 
+## Contacts
+* Michael Jiang (mijiang@cisco.com)
+* Ajay Gupta (akgupta@cisco.com)
+* kishan yadav (kishyada@cisco.com)
+* Rod Morehead (rmorehea@cisco.com)
+* Charles Mather (cmather@cisco.com)
+
+### Python version and OS consideration
+The scripts had been tested under both Windows 10 and Ubuntu.
+The version of Python is 3. x.x.
+
 ## UCM Tar file preprocessing
 
 ### Description
@@ -311,7 +322,3 @@ this test is to check that the script will not generate any new output, instead 
 * Syntax:
 ``` python3 cdrfgzip.py -p ~/ftp/upload -o ~/Temp```
 * PASSED
-
-### Python version and OS consideration
-The scripts had been tested under both Windows 10 and Ubuntu.
-The version of Python is 3. x.x.
