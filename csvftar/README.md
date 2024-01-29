@@ -39,13 +39,6 @@ The path to the exported UCM data tarfile is the input argument specified using
 
 To specify the output filename path for the CSV file, use the `-o` argument.
 
-## Contacts
-* Michael Jiang (mijiang@cisco.com)
-* Ajay Gupta (akgupta@cisco.com)
-* kishan yadav (kishyada@cisco.com)
-* Rod Morehead (rmorehea@cisco.com)
-* Charles Mather (cmather@cisco.com)
-
 ## Script Functionality
 
 This script extracts the following UCM input CSV files and removes columns of data that are not needed for migration:
