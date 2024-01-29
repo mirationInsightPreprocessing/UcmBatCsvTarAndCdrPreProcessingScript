@@ -1,7 +1,7 @@
 import os
 import sys
 import csv
-import time
+import traceback
 import uuid
 import gzip
 import tarfile
@@ -12,6 +12,12 @@ import datetime
 from os.path import isfile, join, getmtime
 
 
+# Verify we are running Python 3.10 or newer
+if sys.version_info.major < 3:
+    print("Python 3.x.x or newer is required to run this tool.")
+    exit(-1)
+
+
 OUTPUT_PATH_KEY = 'output_path'
 MAX_LINES_PER_FILE_KEY = 'max_line_per_file'
 LAST_COLLECTION_TIME_KEY = 'last_collection_time'
@@ -20,16 +26,16 @@ CNF_FILENAME = '.cdr_collector_filter_cfg'
 CNF_PROFILE_TAG = '[CDR_COLLECTION_FILTER_CNF]'
 CNF_MAXLINES_PERFILE = 1000000
 
+CDR_FILENAME_PREFIXES = ('CDR', 'cdr', 'CMR', 'cmr')
 COMBINED_FILENAME_PREFIX = 'combined_filtered_cdr_'
 
 
 CDR_INCLUDED_HEADERS = []
 CDR_INCLUDED_HEADERS_DATATYPE = {}
-CDR_EXCLUDED_HEADERS = ['origIpAddr','callingPartyNumber','callingPartyUnicodeLoginUserID',
+CDR_EXCLUDED_HEADERS = ['origIpAddr',
                         'origMediaTransportAddress_IP','origMediaTransportAddress_Port',
                         'origVideoTransportAddress_IP','origVideoTransportAddress_Port',
-                        'destIpAddr','originalCalledPartyNumber','finalCalledPartyNumber',
-                        'finalCalledPartyUnicodeLoginUserID','destMediaTransportAddress_IP',
+                        'destIpAddr','destMediaTransportAddress_IP',
                         'destMediaTransportAddress_Port','destVideoTransportAddress_IP',
                         'destVideoTransportAddress_Port','outpulsedCallingPartyNumber',
                         'outpulsedCalledPartyNumber','origIpv4v6Addr','destIpv4v6Addr',
@@ -47,7 +53,7 @@ CDR_ROW_FILTER = []
 # global variables
 sftp_path = None
 envDict = {}
-
+csv_opener = open
 
 logging.basicConfig(format='%(asctime)s [%(levelname)s] %(message)s', level=logging.INFO)
 
@@ -79,8 +85,9 @@ def clean_temp_dir(dirname):
         logging.error('Error occured: %s : %s' % (dirname, ex.strerror))
 
 
-def exit_with_cleanup(ex, dirname):
-    logging.error('Error happened: %s' % ex)
+def exit_with_cleanup(ex, filename, dirname):
+    traceback.print_exc()
+    logging.error('exit_with_cleanup: Error happened when processing file %s: %s' % (filename, ex))
     clean_temp_dir(dirname)
     logging.info('Exit...')
     exit(1)
@@ -121,6 +128,7 @@ def get_csv_filter(filter_file_path):
 
 def process_env(args):
     global sftp_path
+    global csv_opener
 
     sftp_path = args.path
 
@@ -144,6 +152,10 @@ def process_env(args):
     if args.maxlines != None and args.maxlines.isnumeric():
         envDict[MAX_LINES_PER_FILE_KEY] = args.maxlines if int(args.maxlines) < \
             CNF_MAXLINES_PERFILE else str(CNF_MAXLINES_PERFILE)
+
+    # if the csv file is compressed, use gzip open
+    if args.compress != None and args.compress.lower() == "gzip":
+        csv_opener = gzip.open
 
     # last, if still not set, we will use default
     if OUTPUT_PATH_KEY not in envDict.keys():
@@ -171,6 +183,7 @@ def write_back_env(collection_time):
 def filter_zip_cdr():
     global sftp_path
     global CDR_ROW_FILTER
+    global csv_opener
 
     ftime =float(envDict[LAST_COLLECTION_TIME_KEY])
     #logging.info(ftime)
@@ -182,7 +195,7 @@ def filter_zip_cdr():
         exit(1)
 
     after_lastcollection_files = [f for f in dirs if isfile(join(sftp_path, f)) and
-                                  (f.startswith('CDR') or f.startswith('cdr')) and
+                                  f.startswith(CDR_FILENAME_PREFIXES) and
                                   is_after(getmtime(join(sftp_path, f)), ftime)]
     after_lastcollection_files.sort(key=lambda f: getmtime(join(sftp_path, f)))
 
@@ -203,17 +216,22 @@ def filter_zip_cdr():
             exit(1)
 
     all_headers = []
+    type_row = []
     for f in after_lastcollection_files:
         try:
-            with open(join(sftp_path, f), newline='') as csvInputFile:
+            with csv_opener(join(sftp_path, f), mode = 'rt', newline='') as csvInputFile:
                 csvreader = csv.DictReader(csvInputFile, delimiter=',', quotechar='"')
                 all_headers = csvreader.fieldnames
+                for row in csvreader:
+                    type_row = row
+                    break
                 if len(all_headers) > 0:
                     break
         except Exception as ex:
-            exit_with_cleanup(ex, output_temp_path)
+            exit_with_cleanup(ex, f, output_temp_path)
 
     CDR_INCLUDED_HEADERS = list(filter(lambda h: h not in CDR_EXCLUDED_HEADERS, all_headers))
+    CDR_INCLUDED_HEADERS_DATATYPE = {x:type_row[x] for x in CDR_INCLUDED_HEADERS}
 
     line_count = 0
     rows_to_write = []
@@ -221,11 +239,10 @@ def filter_zip_cdr():
     for index, f in enumerate(after_lastcollection_files):
         skip_datatype = 0
         try:
-            with open(join(sftp_path, f), newline='') as csvInputFile:
+            with csv_opener(join(sftp_path, f), mode = 'rt', newline='', errors='replace') as csvInputFile:
                 csvreader = csv.DictReader(csvInputFile, delimiter=',', quotechar='"')
                 for row in csvreader:
                     if skip_datatype == 0:
-                        CDR_INCLUDED_HEADERS_DATATYPE = row
                         skip_datatype = 1
                         continue
 
@@ -234,14 +251,19 @@ def filter_zip_cdr():
                             continue
 
                     for x in CDR_INCLUDED_HEADERS:
+                        if x not in row:
+                            row[x] = ''
                         if CDR_INCLUDED_HEADERS_DATATYPE[x] == 'INTEGER':
-                            row[x] = int(row[x])
+                            try:
+                                row[x] = int(row[x])
+                            except:
+                                row[x] = 0
 
                     new_row = [row[x] for x in CDR_INCLUDED_HEADERS]
                     rows_to_write.append(new_row)
                     line_count = line_count + 1
         except Exception as ex:
-            exit_with_cleanup(ex, output_temp_path)
+            exit_with_cleanup(ex, f, output_temp_path)
 
         if line_count >= int(envDict[MAX_LINES_PER_FILE_KEY]) or index == (files_count-1):
             file_timestamp = getmtime(join(sftp_path, f))
@@ -260,7 +282,7 @@ def filter_zip_cdr():
                     with gzip.open(join(envDict[OUTPUT_PATH_KEY], output_gzip_filename), 'wb') as f_out:
                         shutil.copyfileobj(f_in, f_out)
             except Exception as ex:
-                exit_with_cleanup(ex, output_temp_path)
+                exit_with_cleanup(ex, temp_file, output_temp_path)
 
             rows_to_write.clear()
             line_count = 0
@@ -271,10 +293,11 @@ def filter_zip_cdr():
 
 def main():
     argParser = argparse.ArgumentParser()
-    argParser.add_argument('-p', '--path', help='sftp/ftp path', required='true')
+    argParser.add_argument('-p', '--path', help='sftp/ftp path to cdr files', required='true')
     argParser.add_argument('-o', '--output', help='output zip file path. If not specified, use PATH')
-    argParser.add_argument('-l', '--maxlines', help='the max records number in one csv file; max is 1000000')
-    argParser.add_argument('-f', '--filter', help='the filter file (phone.csv) path')
+    argParser.add_argument('-l', '--maxlines', help='the max cdr number in one csv file; max is 1000000')
+    argParser.add_argument('-f', '--filter', help='the filter file (phone.csv) path used to process cdr files')
+    argParser.add_argument('-c', '--compress', help='specify the compressed format (gzip) used for original cdr file. Default is plain csv')
 
     args = argParser.parse_args()
     if not os.path.exists(args.path):
