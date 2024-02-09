@@ -26,7 +26,8 @@ Once this tar file has been generated and is available locally, the
 #### How to Collect CDR's
 Please follow [this](https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/cucm/service/12_5_1/Car/cucm_b_cdr-analysis-reporting-admin-guide-1251/cucm_b_cdr-analysis-reporting-admin-guide-1251_chapter_010.html#CUCM_RF_C60605F7_00) link for details: 
 
-***Important Note*** Once CDR is received and is available locally, it is mandatory to preprocess the script before uploading it to CH for Migration Insight The script will take your CDR which can be a list of text or CSV file and will regenerate the file in .csv.gz format, which is the acceptable format for MigrationInsight. This helps us in file size reduction as the allowed limit on Control Hub is 2Gb
+***Important Note*** Once CDR is received and is available locally, it is mandatory to preprocess the script before uploading it to CH for [Migration Insight](https://help.webex.com/en-us/article/svoi86/Migration-Insights) The script will take your CDR which can be a list of text or CSV file and will regenerate the file in .csv.gz format, which is the acceptable format for MigrationInsight. This helps us in file size reduction as the allowed limit on Control Hub is 2Gb
+
 - This script removes columns that are not required for processing on Control Hub.
 - This script also supports filtering where it also requires a UCM tar file from the above step. On filtering it will give data only for devices that are present in phone.csv from the UCM tar file. 
 - Follow [cdrfgzip](cdrfgzip/README.md) for Syntax and example test cases. you can find the sample files in the script directory.
