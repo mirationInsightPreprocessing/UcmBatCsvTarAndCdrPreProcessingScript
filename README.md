@@ -1,4 +1,5 @@
-This repository contains script to assist with migration to Webex Calling related tasks.
+This repository contains scripts to assist with migration to Webex Calling-related tasks.
+The script provided here will process (merge, remove unwanted columns, compress etc.) the CDR data collected on a server. The processed CDR file (in .zip format) can be uploaded on to Webex Control Hub.
 
 Currently the following scripts are supported:
 
