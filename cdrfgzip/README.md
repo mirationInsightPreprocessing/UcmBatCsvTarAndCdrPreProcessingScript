@@ -1,5 +1,5 @@
+## CDR CSV filtering and combining
 ### Syntax to run script
-
 ```
 usage: cdrfgzip.py [-h] -p PATH [-o OUTPUT] [-l MAXLINES] [-f FILTER]
 options:
@@ -15,7 +15,64 @@ options:
                         specify the compressed format (gzip) used for original cdr file. Default is plain csv.
 ```
 
-**Note**, if the value of maxlines option is 0, then the default 1000000 will be used. If the specified filter file does not exist, then filtering will be ignored.
+**Note**, If the value of maxlines option is 0, then the default 1000000 will be used. If the specified filter file does not exist, then filtering will be ignored.
+
+### Description
+
+This preprocessing does the following tasks:
+
+1. Collect CDR files CUCM generates since the last collection time.
+2. Apply the filtering which is Device Name in phone.csv.  Only the
+   CDR which contains one of devices in phone.csv will be included for
+   next step.
+3. Remove the unwanted columns.
+4. Combine the CDR files into one, then gzip.
+
+### CDR CSV Column Removal
+
+The following columns will be removed in processing:
+
+* origIpAddr
+* origMediaTransportAddress_IP
+* origMediaTransportAddress_Port
+* origVideoTransportAddress_IP
+* origVideoTransportAddress_Port
+* destIpAddr
+* destMediaTransportAddress_IP
+* destMediaTransportAddress_Port
+* destVideoTransportAddress_IP
+* destVideoTransportAddress_Port
+* outpulsedCallingPartyNumber
+* outpulsedCalledPartyNumber
+* origIpv4v6Addr
+* destIpv4v6Addr
+* origVideoTransportAddress_IP_Channel2
+* origVideoTransportAddress_Port_Channel2
+* destVideoTransportAddress_IP_Channel2
+* destVideoTransportAddress_Port_Channel2
+* outpulsedOriginalCalledPartyNumber
+* outpulsedLastRedirectingNumber
+* callingPartyNumber_uri
+* originalCalledPartyNumber_uri
+* finalCalledPartyNumber_uri
+* lastRedirectDn_uri
+* mobileCallingPartyNumber
+* finalMobileCalledPartyNumber
+
+**Filter**
+
+Filtering for CDR is meant to collect the information of the only related devices, which can be correlated by Device Name, hence the phone.csv  from UCM data is used.
+For convenience, both UCM data tarfile and phone.csv can be used.
+Filtering is optional. IF not specifying a filter or something goes wrong with filter file, the filtering will be ignored.
+Design/Implementation
+The codes are in written in Python, using Python Standard library to avoid extra installation requirement.
+The only required input is the path of UCM CDR folder.  The user running the script must have read permission on the path and CDR files.
+The filtering step is executed before column removal, in case that a filtering uses the column content to be removed.
+
+The script has some running options such as output path, maxlines per combined CDR file. Those options only needs input once.
+Important note: a small text file (for run configuration) needs to created in CDR folder, hence the user running the script should have write permission on CDR folder.
+
+
 **Tests**
 Normal cases:
 
@@ -86,18 +143,6 @@ Normal cases:
 * Syntax:
   ``` python3 cdrfgzip.py -p ~/ftp/upload -o ~/Temp```
 * PASSED
-
-### LICENSE
-
-Provided under Cisco Sample Code License, for details see [LICENSE](LICENSE.md)
-
-### CODE_OF_CONDUCT
-
-Our code of conduct is available [here](CODE_OF_CONDUCT.md)
-
-### CONTRIBUTING
-
-See our contributing guidelines [here](CONTRIBUTING.md)
 
 #### DISCLAIMER:
 <b>Please note:</b> If you need to upload a processed tar file or cdr file onto our CISCO tool, please ensure that the size of the compressed file is within the specified limit. If the file size exceeds the limit, you may need to delete some data and reprocess the file to make it smaller and meet the tool's requirements.

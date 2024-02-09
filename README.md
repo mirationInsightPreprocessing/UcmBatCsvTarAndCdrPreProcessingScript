@@ -20,3 +20,15 @@ The version of Python is 3. x.x.
 * kishan yadav (kishyada@cisco.com)
 * Rod Morehead (rmorehea@cisco.com)
 * Charles Mather (cmather@cisco.com)
+
+### LICENSE
+
+Provided under Cisco Sample Code License, for details see [LICENSE](LICENSE.md)
+
+### CODE_OF_CONDUCT
+
+Our code of conduct is available [here](CODE_OF_CONDUCT.md)
+
+### CONTRIBUTING
+
+See our contributing guidelines [here](CONTRIBUTING.md)
