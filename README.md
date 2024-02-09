@@ -1,5 +1,4 @@
-Migration 
-- This repository contains scripts to assist with migration to Webex Calling-related tasks.
+This repository contains scripts to assist with migration to Webex Calling-related tasks.
 The script provided here will process (merge, remove unwanted columns, compress etc.) the Call detail records (CDR) data collected on a server or Unified Communications Manager (UCM). The corresponding compressed files then can be uploaded on Control Hub
 
 Currently the following scripts are supported:
