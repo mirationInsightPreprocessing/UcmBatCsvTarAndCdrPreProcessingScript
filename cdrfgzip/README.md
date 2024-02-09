@@ -15,7 +15,7 @@ options:
                         specify the compressed format (gzip) used for original cdr file. Default is plain csv.
 ```
 
-**Note**, If the value of maxlines option is 0, then the default 1000000 will be used. If the specified filter file does not exist, then filtering will be ignored.
+**Note**, If the value of the maxlines option is 0, then the default 1000000 will be used. If the specified filter file does not exist, then filtering will be ignored.
 
 ### Description
 
@@ -23,8 +23,7 @@ This preprocessing does the following tasks:
 
 1. Collect CDR files CUCM generates since the last collection time.
 2. Apply the filtering which is Device Name in phone.csv.  Only the
-   CDR which contains one of devices in phone.csv will be included for
-   next step.
+   CDR which contains one of the devices in phone.csv will be included for the next step.
 3. Remove the unwanted columns.
 4. Combine the CDR files into one, then gzip.
 
@@ -63,9 +62,9 @@ The following columns will be removed in processing:
 
 Filtering for CDR is meant to collect the information of the only related devices, which can be correlated by Device Name, hence the phone.csv  from UCM data is used.
 For convenience, both UCM data tarfile and phone.csv can be used.
-Filtering is optional. IF not specifying a filter or something goes wrong with filter file, the filtering will be ignored.
+Filtering is optional. If not specifying a filter or something goes wrong with filter file, the filtering will be ignored.
 Design/Implementation
-The codes are in written in Python, using Python Standard library to avoid extra installation requirement.
+The codes are written in Python, using Python Standard library to avoid extra installation requirement.
 The only required input is the path of UCM CDR folder.  The user running the script must have read permission on the path and CDR files.
 The filtering step is executed before column removal, in case that a filtering uses the column content to be removed.
 
@@ -94,7 +93,7 @@ Normal cases:
 
 **Case 3** -
 * run with CDR path only after Case 2:
-  In this test, no other options are specified besides input CDR path,  the run configuration from last run will be use: the new combined CDR gzip will be in same output folder with maxlines 100 per file.
+  In this test, no other options are specified besides the input CDR path,  the run configuration from the last run will be used: the new combined CDR gzip will be in the same output folder with max lines 100 per file.
   $ ls Temp
   combined_filtered_cdr_2023-06-03_07_34_15.946318.csv.gz  combined_filtered_cdr_2023-06-17_07_57_03.960705.csv.gz  combined_filtered_cdr_2023-06-18_09_09_06.180277.csv.gz
 * Syntax:
@@ -103,7 +102,7 @@ Normal cases:
 
 **Case 4** -
 * specify a UCM data tarfile as the filter:
-  the UCM data tarfile can be the original one or the one after processing described. The script will use phone.csv inside tarfile to filter on CDR rows.
+  the UCM data tarfile can be the original one or the one after the processing described. The script will use phone.csv inside tarfile to filter on CDR rows.
 * Syntax:
   ``` python3 cdrfgzip.py -p ~/ftp/upload -f ~/Filter/Set2/ucmdata_export_61_74.tar -o ~/Temp ```
 * PASSED
@@ -117,27 +116,27 @@ Normal cases:
 
 **Case 6** -
 * specify a tarfile containing phone.csv or phone.csv as the filter, but no content in it:
-  the filter has no effect since no cotents.
+  the filter has no effect since no contents.
 * Syntax:
   ``` python3 cdrfgzip.py -p ~/ftp/upload -o ~/Temp -f ~/Filter/Set1/phone.csv ```
 * PASSED
 
 **Case 7** -
-* specify a filter which does not exist:
+* specify a filter that does not exist:
   since the filter does not exist, the output will be generated without any filtering.
 * Syntax:
   ```python3 cdrfgzip.py -p ~/ftp/upload -o ~/Temp -f ~/Filter/notexisted```
   PASSED
 
 **Case 8** -
-* specify a csv file as filter, but its name is not phone.csv:
-  the filter file can only be the tarfile containing phone.csv  or phone.csv  itself, so this filter will not have any effect.
+specify a CSV file as a filter, but its name is not phone.csv:
+  the filter file can only be the tar file containing phone.csv  or phone.csv  itself, so this filter will not have any effect.
 * Syntax:
   ```python3 cdrfgzip.py -p ~/ftp/upload -o ~/Temp -f ~/Filter/unrelated.csv```
 * PASSED
 
 **Case 9** -
-* run script after previous run but there is no new CDR file generated:
+run a script after a previous run but there is no new CDR file generated:
   this test is to check that the script will not generate any new output, instead it should display some info as below:
   2023-06-18 06:07:03,613 [INFO] No new cdr files generated after 2023-06-17 07:57:03.960705
 * Syntax:
