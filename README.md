@@ -15,11 +15,10 @@ Administration Tool (BAT) export
 ](https://www.cisco.com/c/en/us/support/docs/unified-communications/bulk-administration-tool/200596-Bulk-Configure-Changes-with-Import-Expor.html#anc7).
 
 Once this tar file has been generated and is available locally, the
-`csvftar.py` script should then be used to regenerate the tar file containing *only* the data needed for migration. This new tar file should
-then be uploaded to the Webex Calling Migration Tool in the Control Hub.
+`csvftar.py` script should then be used to regenerate the tar file containing *only* the data needed for migration. This new tar file should then be uploaded to the Webex Calling Migration Tool in the Control Hub.
 
 - You can use this script when you need to decrease the tar file size because the size for migration is 350 MB. This is achieved by removing not required columns.
-- You can use this script when you need to filter the records based on a specific column, for example, particular device pool
+- You can use this script when you need to filter the records based on a specific column, for example, a particular device pool
 - Follow [cdrfgzip](cdrfgzip/README.md) for Syntax and example test cases. you can find the sample files in the script directory.
 
 ### preprocess Call detail records (CDR'S) File using the [cdrfgzip](cdrfgzip/README.md) script
@@ -27,9 +26,9 @@ then be uploaded to the Webex Calling Migration Tool in the Control Hub.
 #### How to Collect CDR's
 Please follow [this](https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/cucm/service/12_5_1/Car/cucm_b_cdr-analysis-reporting-admin-guide-1251/cucm_b_cdr-analysis-reporting-admin-guide-1251_chapter_010.html#CUCM_RF_C60605F7_00) link for details: 
 
-***Important Note***Once CDR is received and is available locally, it is mandatory to preprocess the script before uploading it to CH for Migration Insight The script will take your CDR which can be a list of text or CSV file and will regenerate the file in .csv.gz format, which is the acceptable format for MigrationInsight. This helps us in file size reduction as the allowed limit on Control Hub is 2Gb
-This script removes columns that are not required for processing on Control Hub.
-- This script also supports filtering where it also requires UCM tar file from above step. On filtering it will give data only for devices that are present in phone.csv from the UCM tar file. 
+***Important Note*** Once CDR is received and is available locally, it is mandatory to preprocess the script before uploading it to CH for Migration Insight The script will take your CDR which can be a list of text or CSV file and will regenerate the file in .csv.gz format, which is the acceptable format for MigrationInsight. This helps us in file size reduction as the allowed limit on Control Hub is 2Gb
+- This script removes columns that are not required for processing on Control Hub.
+- This script also supports filtering where it also requires a UCM tar file from the above step. On filtering it will give data only for devices that are present in phone.csv from the UCM tar file. 
 - Follow [cdrfgzip](cdrfgzip/README.md) for Syntax and example test cases. you can find the sample files in the script directory.
 
 ### Python version and OS consideration
