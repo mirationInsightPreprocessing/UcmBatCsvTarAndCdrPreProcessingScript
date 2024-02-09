@@ -6,8 +6,34 @@ Currently the following scripts are supported:
 - [cdrfgzip](cdrfgzip/README.md)
 - [csvftar](csvftar/README.md)
 
-### How to collect CDR's
+### preprocess Unified Communications Manage (UCM) Export tar File using the [csvftar](csvftar/README.md) script
+
+As part of migration from a local UCM to Webex Calling Multi-tenant,
+the data needed by the Webex Calling migration processing needs to be
+extracted from a current UCM tar file exported using the [Bulk
+Administration Tool (BAT) export
+](https://www.cisco.com/c/en/us/support/docs/unified-communications/bulk-administration-tool/200596-Bulk-Configure-Changes-with-Import-Expor.html#anc7).
+
+Once this tar file has been generated and is available locally, the
+`csvftar.py` script should then be used to regenerate tar file
+containing *only* the data needed for migration. This new tar file should
+then be uploaded to the Webex Calling Migration Tool in Control Hub.
+
+- You can use this script when you need to decrease the tar file size, because maxsize for migration is 350 MB. This is achieved by removing not required columns.
+- You can use this script when you need to filter the records based on specific column, for example particular device pool
+- Follow [cdrfgzip](cdrfgzip/README.md) for Syntax and example test cases. you can find the sample files in the script directory.
+
+### preprocess Call detail records (CDR'S) File using the [cdrfgzip](cdrfgzip/README.md) script
+
+#### How to Collect CDR's
 Please follow [this](https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/cucm/service/12_5_1/Car/cucm_b_cdr-analysis-reporting-admin-guide-1251/cucm_b_cdr-analysis-reporting-admin-guide-1251_chapter_010.html#CUCM_RF_C60605F7_00) link for details: 
+
+Once CDR is received and is available locally, it is mandatory to preprocess the script before uploading it to CH for [Migration Insight repots](https://help.webex.com/en-us/article/svoi86/Migration-Insights)
+
+- This scrip will take your CDR which can be list of txt or CSV file and will regenrate the file in .csv.gz format, which is the acceptable format for MigrationInsight. Thus helps us in file size reduction as allowed limit on Control Hub is 2Gb
+- This script remove columns that are not required for processing on Control Hub.
+- This script also supports filtering where it also requires UCM tar file form above step. On filtering it will give data only for devices which are present in phone.csv from UCM tar file. 
+- Follow [cdrfgzip](cdrfgzip/README.md) for Syntax and example test cases. you can find the sample files in the script directory.
 
 ### Python version and OS consideration
 The scripts had been tested under both Windows 10 and Ubuntu.
