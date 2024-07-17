@@ -10,7 +10,7 @@ import logging
 import argparse
 import datetime
 from os.path import isfile, join, getmtime
-
+from sys import argv, exit
 
 # Verify we are running Python 3.10 or newer
 if sys.version_info.major < 3:

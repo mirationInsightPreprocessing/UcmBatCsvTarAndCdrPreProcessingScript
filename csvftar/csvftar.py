@@ -8,7 +8,7 @@ import tarfile
 import logging
 import argparse
 from os.path import isfile, join, getmtime
-
+from sys import argv, exit
 
 FILTER_CSV_FILE_HEADER = ['csvFileName', 'filterName', 'filterValues', 'filterValuesFile']
 CSV_FILE_FILTER_MAP = {}
