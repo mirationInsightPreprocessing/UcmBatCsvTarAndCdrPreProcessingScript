@@ -6,7 +6,6 @@ import uuid
 import shutil
 import tarfile
 import logging
-import tempfile
 import argparse
 from os.path import isfile, join, getmtime
 
@@ -286,15 +285,17 @@ def untar_filter_tar(tar_file_path, output_tar_path):
     clean_temp_dir(temp_work_dir)
 
 
-def main():
-    argParser = argparse.ArgumentParser()
-    argParser.add_argument('-i', '--input', help='input tarfile path', required='true')
-    argParser.add_argument('-f', '--filter', help='filter csv file path. Filter csv header: ' +
+def main(args=None):
+    if args is None:
+        argParser = argparse.ArgumentParser()
+        argParser.add_argument('-i', '--input', help='input tarfile path', required='true')
+        argParser.add_argument('-f', '--filter', help='filter csv file path. Filter csv header: ' +
                            ','.join(FILTER_CSV_FILE_HEADER))
-    argParser.add_argument('-o', '--output', help='output dir. Optional; If not specified,' +
+        argParser.add_argument('-o', '--output', help='output dir. Optional; If not specified,' +
                            ' the dir of input tarfile path will be used')
 
-    args = argParser.parse_args()
+        args = argParser.parse_args()
+
     if not os.path.exists(args.input):
         logging.error('The tarfile ' + args.input + ' does not exist! Please specify the correct file path\n')
         argParser.print_help()
