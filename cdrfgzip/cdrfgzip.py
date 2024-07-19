@@ -10,7 +10,7 @@ import logging
 import argparse
 import datetime
 from os.path import isfile, join, getmtime
-
+from sys import argv, exit
 
 # Verify we are running Python 3.10 or newer
 if sys.version_info.major < 3:
@@ -291,15 +291,17 @@ def filter_zip_cdr():
     write_back_env(file_timestamp)
 
 
-def main():
-    argParser = argparse.ArgumentParser()
-    argParser.add_argument('-p', '--path', help='sftp/ftp path to cdr files', required='true')
-    argParser.add_argument('-o', '--output', help='output zip file path. If not specified, use PATH')
-    argParser.add_argument('-l', '--maxlines', help='the max cdr number in one csv file; max is 1000000')
-    argParser.add_argument('-f', '--filter', help='the filter file (phone.csv) path used to process cdr files')
-    argParser.add_argument('-c', '--compress', help='specify the compressed format (gzip) used for original cdr file. Default is plain csv')
+def main(args=None):  # Accept an optional args parameter
+    if args is None:
+        argParser = argparse.ArgumentParser()
+        argParser.add_argument('-p', '--path', help='sftp/ftp path to cdr files', required=True)
+        argParser.add_argument('-o', '--output', help='output zip file path. If not specified, use PATH')
+        argParser.add_argument('-l', '--maxlines', help='the max cdr number in one csv file; max is 1000000')
+        argParser.add_argument('-f', '--filter', help='the filter file (phone.csv) path used to process cdr files')
+        argParser.add_argument('-c', '--compress', help='specify the compressed format (gzip) used for original cdr file. Default is plain csv')
 
-    args = argParser.parse_args()
+        args = argParser.parse_args()
+
     if not os.path.exists(args.path):
         logging.error('The path ' + args.path + ' does not exist! Please make sure your sftp/ftp path correct\n')
         argParser.print_help()

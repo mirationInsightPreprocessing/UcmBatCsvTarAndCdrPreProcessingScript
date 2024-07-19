@@ -1,7 +1,35 @@
 This repository contains scripts to assist with migration to Webex Calling-related tasks.
 The script provided here will process (merge, remove unwanted columns, compress etc.) the Call detail records (CDR) data collected on a server or Unified Communications Manager (UCM). The corresponding compressed files then can be uploaded on Control Hub
 
-Currently the following scripts are supported:
+### Executables
+ 
+For convenience, pre-built executables for different operating systems are provided in this repository under executable.zip folder. These executables allow you to run the scripts without needing to set up a Python environment.
+ 
+Available Executables
+ 
+#Mac/: Contains the executable for macOS users.
+#Windows/: Contains the executable for Windows users.
+#Ubuntu/: Contains the executable for Ubuntu users.
+ 
+## Building Your Own Executable
+ 
+If you prefer to build your own executable from the source code, you can find the source code in the wrapperForExecutable.py file. Follow the instructions below to create an executable for your platform:
+ 
+## Prerequisites
+ 
+Ensure you have Python 3.x.x installed on your system.
+Any additional dependencies required by the scripts should be installed.
+ 
+Build Instructions
+ 
+Navigate to the Source/ directory where the script files are located.
+Use a tool like pyinstaller to create an executable. For example:
+# Mac/Ubuntu:  pyinstaller --onefile wrapperForExecutable.py
+# Windows: pyinstaller.exe --onefile -F wrapperForExecutable.py
+
+The executable will be created in the dist/ directory within the Source/ directory.
+
+### Currently the following scripts are supported:
 
 - [cdrfgzip](cdrfgzip/README.md)
 - [csvftar](csvftar/README.md)
