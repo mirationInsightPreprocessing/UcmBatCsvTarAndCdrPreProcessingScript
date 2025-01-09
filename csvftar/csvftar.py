@@ -185,10 +185,20 @@ def process_filter_csv(filter_csv):
 
 def get_included_columns(csvheader, excluded_columns):
     included = []
+    device_name_columns = []
+
     for column in csvheader:
         temp = re.sub(' \d+ | \d+', ' # ', column).strip()
+        temp = re.sub(r' \d+ | \d+', ' # ', column).strip()
         if temp not in excluded_columns:
             included.append(column)
+            if column.startswith('DEVICE NAME'):
+                device_name_columns.append(column)
+            else:
+                included.append(column)
+
+    # Keep only the first 50 "DEVICE NAME" columns
+    included.extend(device_name_columns[:50])
 
     return included
 
