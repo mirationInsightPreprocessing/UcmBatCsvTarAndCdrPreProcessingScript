@@ -183,24 +183,34 @@ def process_filter_csv(filter_csv):
     #logging.info(CSV_FILE_FILTER_MAP)
 
 
-def get_included_columns(csvheader, excluded_columns):
+def get_included_columns(csvheader, excluded_columns, filename):
     included = []
     device_name_columns = []
 
     for column in csvheader:
-        temp = re.sub(' \d+ | \d+', ' # ', column).strip()
         temp = re.sub(r' \d+ | \d+', ' # ', column).strip()
         if temp not in excluded_columns:
-            included.append(column)
             if column.startswith('DEVICE NAME'):
                 device_name_columns.append(column)
             else:
                 included.append(column)
 
-    # Keep only the first 50 "DEVICE NAME" columns
-    included.extend(device_name_columns[:50])
+    # If the file is enduser.csv, keep only the first 50 "DEVICE NAME" columns
+    if filename == ENDUSER_CSV_FILE_NAME:
+        device_name_columns = device_name_columns[:50]
 
-    return included
+    # Create a new list to maintain the order of headers
+    ordered_included = []
+    device_name_count = 0
+
+    for column in csvheader:
+        if column in included:
+            ordered_included.append(column)
+        elif column.startswith('DEVICE NAME') and device_name_count < 50:
+            ordered_included.append(column)
+            device_name_count += 1
+
+    return ordered_included
 
 
 def do_filtering(work_dir, filename):
@@ -213,9 +223,9 @@ def do_filtering(work_dir, filename):
             csvheader = csvreader.fieldnames
 
             if filename == PHONE_CSV_FILE_NAME:
-                CSV_INCLUDED_FIELDS = get_included_columns(csvheader, PHONE_CSV_EXCLUDED_FIELDS)
+                CSV_INCLUDED_FIELDS = get_included_columns(csvheader, PHONE_CSV_EXCLUDED_FIELDS, filename)
             elif  filename == ENDUSER_CSV_FILE_NAME:
-                CSV_INCLUDED_FIELDS = get_included_columns(csvheader, ENDUSER_CSV_EXCLUDED_FIELDS)
+                CSV_INCLUDED_FIELDS = get_included_columns(csvheader, ENDUSER_CSV_EXCLUDED_FIELDS, filename)
             else:
                 CSV_INCLUDED_FIELDS = csvheader
 
