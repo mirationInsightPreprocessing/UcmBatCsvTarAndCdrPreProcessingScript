@@ -33,6 +33,7 @@ The executable will be created in the dist/ directory within the Source/ directo
 
 - [cdrfgzip](cdrfgzip/README.md)
 - [csvftar](csvftar/README.md)
+- [UserBasedUCMFeatureMigration](UserBasedUCMFeatureMigration/README.md)
 
 ### preprocess Unified Communications Manager (UCM) Export tar File using the [csvftar](csvftar/README.md) script
 
@@ -51,6 +52,8 @@ Once this tar file has been generated and is available locally, the
 
 ### preprocess Call detail records (CDR'S) File using the [cdrfgzip](cdrfgzip/README.md) script
 
+### A Python tool for filtering UCM migration outputs, identifying missing users in group features, and generating Call Park and Pickup group WxC CSVs using [UserBasedUCMFeatureMigration](UserBasedUCMFeatureMigration/README.md) script.
+
 #### How to Collect CDR's
 Please follow [this](https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/cucm/service/12_5_1/Car/cucm_b_cdr-analysis-reporting-admin-guide-1251/cucm_b_cdr-analysis-reporting-admin-guide-1251_chapter_010.html#CUCM_RF_C60605F7_00) link for details: 
 
@@ -59,6 +62,9 @@ Please follow [this](https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/cucm/se
 - This script removes columns that are not required for processing on Control Hub.
 - This script also supports filtering where it also requires a UCM tar file from the above step. On filtering it will give data only for devices that are present in phone.csv from the UCM tar file. 
 - Follow [cdrfgzip](cdrfgzip/README.md) for Syntax and example test cases. you can find the sample files in the script directory.
+- Filter WxC CSVs output from "Migrate features from UCM" tool  based on user list using [UserBasedUCMFeatureMigration](UserBasedUCMFeatureMigration/README.md)
+
+Please follow this link for details: https://help.webex.com/en-us/article/d2lemv/Migration-of-Devices-and-Features-from-Unified-CM-to-Webex-Calling#concept-template_faaca1ce-55ad-4db3-9a99-9b06ac7e6190
 
 ### Python version and OS consideration
 The scripts had been tested under both Windows 10 and Ubuntu.
