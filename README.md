@@ -64,7 +64,7 @@ Please follow [this](https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/cucm/se
 - Follow [cdrfgzip](cdrfgzip/README.md) for Syntax and example test cases. you can find the sample files in the script directory.
 - Filter WxC CSVs output from "Migrate features from UCM" tool  based on user list using [UserBasedUCMFeatureMigration](UserBasedUCMFeatureMigration/README.md)
 
-Please follow this link for details: https://help.webex.com/en-us/article/d2lemv/Migration-of-Devices-and-Features-from-Unified-CM-to-Webex-Calling#concept-template_faaca1ce-55ad-4db3-9a99-9b06ac7e6190
+Please follow [this](https://help.webex.com/en-us/article/d2lemv/Migration-of-Devices-and-Features-from-Unified-CM-to-Webex-Calling#concept-template_faaca1ce-55ad-4db3-9a99-9b06ac7e6190)
 
 ### Python version and OS consideration
 The scripts had been tested under both Windows 10 and Ubuntu.
