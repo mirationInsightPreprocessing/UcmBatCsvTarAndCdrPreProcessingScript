@@ -6,6 +6,7 @@ Usage:
 
 
 Parameters:
+
 DNInmultipleDP -> Identify Directory numbers which present in multiple Device Pools and list in DNInMultipleDevicePool.csv in insightDir
 
 csvDir=<Path to directory where UCM Feature Migration tool output .zip is unziped>
