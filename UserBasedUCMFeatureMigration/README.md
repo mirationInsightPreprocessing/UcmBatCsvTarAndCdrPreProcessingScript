@@ -1,6 +1,9 @@
 Hostname> python UserBasedUCMFeatureMigration.py
+
 Total arguments passed: 0
+
 Usage:
+
 1.	python UserBasedUCMFeatureMigration.py DNInMultipleDP insightDir=(see below)
 2.	python UserBasedUCMFeatureMigration.py csvDir=(see below) UserList=(see below) insightDir=(see below)
 
