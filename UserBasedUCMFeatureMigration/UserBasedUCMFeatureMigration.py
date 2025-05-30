@@ -415,6 +415,30 @@ def createLocationFeatureFilteredList(directory_path, userstomigrate, HuntGroupB
         writer.writerow(headers)
         writer.writerows(callPickupFilteredList)
 
+def IdenfiyDNInMultipleDP(directory_path, DevicePool):
+
+    ### Identify if DN exist in multiple device pool
+    print("Inside IdenfiyDNInMultipleDP")
+    devicePool = {}
+    dnInDP = []
+    headers = ["Directory Number", "Device Pool", "Device Pool"]
+        
+    for rowDP in DevicePool.iterrows():
+        devicePool[rowDP[1][0].split(',')[0]] = rowDP[1][0].split(',')[1:]
+    for key in devicePool.keys():
+        
+        for num in devicePool[key]:
+            for numList in devicePool.keys():
+                if (num in devicePool[numList]) and (numList != key):
+                    dnInDP.append([num, key, numList])
+
+    fileDNInMultipleDP = directory_path + '/DNInMultipleDevicePool.csv'
+    with open(fileDNInMultipleDP, 'w') as file5:
+        writer = csv.writer(file5)
+        writer.writerow(headers)
+        writer.writerows(dnInDP)
+    print("Directory numbers which present in multiple Device Pools are listed in DNInMultipleDevicePool.csv ")
+
 def main():
 
     csvDir = "" 
@@ -426,20 +450,34 @@ def main():
     print("Total arguments passed:", n - 1)
 
     if n == 1:
-        print("Usage: " + '\n' + "python UserBasedUCMFeatureMigration.py csvDir=<see below> UserList=<see below> insightDir=<see below>" + '\n')
-        print("csvDir=<Path to directory where UCM Feature Migration tool output .zip is unziped>")
-        print("userList=<UserList file (same format as used in UCM migration tool) with path")
-        print("insightDir=<Path to directory where UCM Migration Insight tool output .zip is unziped>." + '\n' + 
-              "            This is needed for Call Park and Pickup group WxC CSVs needs to be creeated from Migration Insight output" + '\n')
-        print("This tool provide 3 funstionality: " + '\n')
-        print('1) User list based filtering of output from "Migrate features from UCM" tool')
+        print("Usage: " + '\n' + "1) python UserBasedUCMFeatureMigration.py DNInMultipleDP insightDir=(see below)" + '\n')
+        print("2) python UserBasedUCMFeatureMigration.py csvDir=(see below) UserList=(see below) insightDir=(see below)" + '\n')
+        print("Parameters:")
+        print("DNInmultipleDP -> Identify Directory numbers which present in multiple Device Pools and list in DNInMultipleDevicePool.csv in insightDir" + '\n')
+        print("csvDir=<Path to directory where UCM Feature Migration tool output .zip is unziped>"+ '\n')
+        print("userList=<UserList file (same format as used in UCM migration tool) with path. Use EMAIL ID (not CUCM USER ID) and you can add Location column to overide user/device location." + '\n')
+        print("insightDir=<Path to directory where UCM Migration Insight tool output .zip is unziped>. This is needed for Call Park and Pickup group WxC CSVs needs to be creeated from Migration Insight output" + '\n')
+        print('\n' + "This tool provide 4 main functionality: " + '\n')
+        print('1) User list based filtering of output from "Migrate features from UCM" tool. You can override user/device location also using a Location column.')
         print('2) Identify users which are part of group features but not present in provided User list')
-        print('3) Create Call park and Call Pickup group WxC CSV files which currently "Migrate features from UCM" tool doesnt generate' + '\n')
+        print('3) Identify Directory numbers which present in multiple Device Pools and list in DNInMultipleDevicePool.csv in insightDir')
+        print('4) Create Call park and Call Pickup group WxC CSV files which currently "Migrate features from UCM" tool doesnt generate' + '\n')
         exit()
 
     # Arguments passed
     print("\nName of Python script:", sys.argv[0])
     print("Argument passed are:")
+
+    if len(sys.argv) == 3 and sys.argv[1] == "DNInMultipleDP":
+        print("DNInMultipleDP")
+        print(sys.argv[2] + '\n')
+        insightDir = ""
+        param = sys.argv[2].split("=")
+        if param[0] == "insightDir":
+            insightDir = param[1]
+        DevicePool = pd.read_csv(insightDir + '/DevicePoolNumbers.txt', sep='\r', header=None)
+        IdenfiyDNInMultipleDP(insightDir, DevicePool)
+        exit()
 
     for i in range(1, n):
         param = sys.argv[i].split("=")
